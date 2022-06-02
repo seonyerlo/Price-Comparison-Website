@@ -11,4 +11,24 @@ spring:
     url: jdbc:mysql://localhost:3306/pcw?characterEncoding=UTF-8
     username: root
     password: root
-      
+
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true      
+        show_sql: true
+        
+  output:
+    ansi:
+      enabled: always
+    
+    #자동 빌드 설정 auto build
+  devtools:
+     livereload:
+        enabled: true
+     restart:
+        enabled: true
+
+    
+    
+    
