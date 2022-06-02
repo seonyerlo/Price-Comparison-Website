@@ -17,8 +17,12 @@ public class UserBO {
 	 * @param userId
 	 * @return
 	 */
-	public int getUserByUserId(String userId) {
-		return userDAO.selectUserByUserId(userId);
+	public int getUserByLoginId(String userId) {
+		return userDAO.selectUserByLoginId(userId);
+	}
+	
+	public User getUserById(int userId) {
+		return userDAO.selectUserById(userId);
 	}
 	
 	/**
@@ -42,7 +46,7 @@ public class UserBO {
 	 * @return
 	 */
 	public int addUser(String userId, String userPw, String userName,
-			String userEmail, String userPhoneNumber, String userAddress) {
-		return userDAO.insertUser(userId, userPw, userName, userEmail, userPhoneNumber, userAddress);
+			String userEmail, String userPhoneNumber, String userAddress1, String userAddress2) {
+		return userDAO.insertUser(userId, userPw, userName, userEmail, userPhoneNumber, userAddress1, userAddress2);
 	}
 }

@@ -31,7 +31,7 @@ public class UserRestController {
 		Map<String, Object> result = new HashMap<>();
 		
 		// db
-		int count = userBO.getUserByUserId(userId);
+		int count = userBO.getUserByLoginId(userId);
 		if  (count > 0) {
 			// id가 중복, 존재
 			result.put("result", true);
@@ -67,6 +67,7 @@ public class UserRestController {
 		
 		if (user != null) {
 			result.put("result", "success");
+			session.setAttribute("userId", user.getId());
 			session.setAttribute("userName", user.getUserName());
 		} else {
 			result.put("result", "error");
@@ -94,7 +95,8 @@ public class UserRestController {
 			@RequestParam("userName") String userName,
 			@RequestParam("userEmail") String userEmail,
 			@RequestParam("userPhoneNumber") String userPhoneNumber,
-			@RequestParam("userAddress") String userAddress) throws NoSuchAlgorithmException {
+			@RequestParam("userAddress1") String userAddress1,
+			@RequestParam("userAddress2") String userAddress2 ) throws NoSuchAlgorithmException {
 	
 		Map<String, Object> result = new HashMap<>();
 		
@@ -103,7 +105,7 @@ public class UserRestController {
         String cryptoram = sha256.encrypt(userPw);
 		
 		// db
-		int count = userBO.addUser(userId, cryptoram, userName, userEmail, userPhoneNumber, userAddress);
+		int count = userBO.addUser(userId, cryptoram, userName, userEmail, userPhoneNumber, userAddress1, userAddress2);
 		
 		result.put("result", "success");
 		

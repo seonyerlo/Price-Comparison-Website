@@ -10,7 +10,8 @@ public class User {
 	private String userName;
 	private String userEmail;
 	private String userPhoneNumber;
-	private String userAddress;
+	private String userAddress1;
+	private String userAddress2;
 	private Date createdAt;
 	private Date updatedAt;
 	
@@ -50,11 +51,17 @@ public class User {
 	public void setUserPhoneNumber(String userPhoneNumber) {
 		this.userPhoneNumber = userPhoneNumber;
 	}
-	public String getUserAddress() {
-		return userAddress;
+	public String getUserAddress1() {
+		return userAddress1;
 	}
-	public void setUserAddress(String userAddress) {
-		this.userAddress = userAddress;
+	public void setUserAddress1(String userAddress1) {
+		this.userAddress1 = userAddress1;
+	}
+	public String getUserAddress2() {
+		return userAddress2;
+	}
+	public void setUserAddress2(String userAddress2) {
+		this.userAddress2 = userAddress2;
 	}
 	public Date getCreatedAt() {
 		return createdAt;
@@ -68,4 +75,5 @@ public class User {
 	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = updatedAt;
 	}
+
 }

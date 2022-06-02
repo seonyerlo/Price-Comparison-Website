@@ -44,14 +44,18 @@
 		</div>
 		<div class="pcw-sign-form-group">
 			<label for="userPhoneNumber">전화번호</label>
-			<input id="userPhoneNumber" type="text" class="pcw-sign-input" placeholder="숫자 13까지 가능" maxlength="13">
+			<input id="userPhoneNumber" type="text" class="pcw-sign-input" placeholder="'-'없이 입력" maxlength="13">
 			<div class="pcw-check-box">
 	    		<span class="pcw-phone-check-text d-none">최대 13이하로 입력하세요.</span>
 			</div>
 		</div>
 		<div class="pcw-sign-form-group">
-			<label for="userAddress">주소</label>
-			<input id="userAddress1" type="text" class="user-address pcw-sign-input mb-2" placeholder="주소지 입력">
+			<label for="userFindAddress">주소</label>
+			<div class="mb-2">
+				<input type="text" id="userFindAddress" class="user-address pcw-sign-input" placeholder="우편번호" readonly>
+				<button type="button" id="userFindAddressBtn" class="find-address-btn">우편번호 찾기</button>
+			</div>
+			<input id="userAddress1" type="text" class="user-address pcw-sign-input mb-2" placeholder="주소지 입력" readonly>
 			<input id="userAddress2" type="text" class="user-address pcw-sign-input" placeholder="상세주소 입력">
 			<div class="pcw-check-box">
 	    		<span class="pcw-address-check-text d-none"></span>
@@ -86,9 +90,8 @@ $(document).ready(function() {
 	const regName = /^[ㄱ-ㅎ가-힣a-zA-Z]+$/;
 	// 이메일 정규 표현식
 	const regEmail = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
-	// 주소 정규 표현식 (주소지 입력)
-	const regAddress = /^[가-힣0-9-]+$/;
-	// 주소 정규 표현식 (상세주소지 입력)
+	// 주소 정규 표현식 (주소지 입력 띄어쓰기 가능)
+	const regAddress = /^[0-9-가-힣\s]+$/;
 	
 	// 아이디 유효성 검사 
 	$('#userId').on('input', function(e) {
@@ -234,27 +237,33 @@ $(document).ready(function() {
 		$(this).val($(this).val().replace(/[^0-9]/g, "").replace(/(^02|^0505|^1[0-9]{3}|^0[0-9]{2})([0-9]+)?([0-9]{4})$/,"$1-$2-$3").replace("--", "-") ); 
 	});
 	
+	$('#userFindAddressBtn').on('click', function() {
+        new daum.Postcode({
+        oncomplete: function(data) {
+                $('#userFindAddress').val(data.zonecode);
+                $('#userAddress1').val(data.address);
+                $('#userAddress2').focus();
+            }
+        }).open();
+    });
+
+	// 우편번호 이벤트
+	$('#userFindAddress').on('click', function() {
+    	$('#userFindAddressBtn').click();
+    });
+	
+	// 주소지 이벤트
+	$('#userAddress1').on('click', function() {
+    	$('#userFindAddressBtn').click();
+    });
+	
+	
 	// 주소 유효성 검사 
-	$('#userAddress1, #userAddress2').on('input', function() {
-		let userAddress1 = $('#userAddress1').val();
+	$('#userAddress2').on('input', function() {
 		let userAddress2 = $('#userAddress2').val();
 		
 		// 초기화
 		$('.pcw-address-check-text').addClass('d-none');
-		
-		if (userAddress1.length == '') {
-			$('.pcw-address-check-text').removeClass('d-none');
-			$('.pcw-address-check-text').css('color', 'red');
-			$('.pcw-address-check-text').text('주소를 입력하세요.');
-			return;
-		} 
-		
-		if (!userAddress1.match(regAddress)) {
-			$('.pcw-address-check-text').removeClass('d-none');
-			$('.pcw-address-check-text').css('color', 'red');
-			$('.pcw-address-check-text').text('영문이 포함되어 있습니다.');
-			return;
-		}
 		
 		if (userAddress2.length == '') {
 			$('.pcw-address-check-text').removeClass('d-none');
@@ -266,17 +275,16 @@ $(document).ready(function() {
 		if (!userAddress2.match(regAddress)) {
 			$('.pcw-address-check-text').removeClass('d-none');
 			$('.pcw-address-check-text').css('color', 'red');
-			$('.pcw-address-check-text').text('영문이 포함되어 있습니다.');
+			$('.pcw-address-check-text').text('허용되지 않는 문자열이 포함되어 있습니다.');
 			return;
 		}
 		
 	});
+
+	
 	
 	// 회원가입 버튼 클릭 
 	$('#signUpBtn').on('click', function(e) {
-		
-		// 초기화 
-
 		
 		// 아이디 유효성 검사 
 		let userId = $('#userId').val().trim();
@@ -375,6 +383,16 @@ $(document).ready(function() {
 			return;
 		} 
 		
+		// 주소 유효성 검사(우편번호)
+		let userFindAddress = $('#userFindAddress').val().trim();
+		if (userFindAddress == '') {
+			$('.pcw-address-check-text').removeClass('d-none');
+			$('.pcw-address-check-text').css('color', 'red');
+			$('.pcw-address-check-text').text('주소를 입력하세요.');
+			$('#userFindAddress').focus();
+			return;
+		}
+		
 		// 주소 유효성 검사 (주소지)
 		let userAddress1 = $('#userAddress1').val().trim();
 		if (userAddress1 == '') {
@@ -402,8 +420,8 @@ $(document).ready(function() {
 			return;
 		}
 		
-		// 주소지와 상세주소 합침
-		let userAddress = userAddress1 + ' ' + userAddress2;
+		// 우편번호, 주소지 상세주소 합침
+		userAddress1 = '(' + userFindAddress + ')' + userAddress1;
 		
 		// 회원가입
 		$.ajax({
@@ -415,7 +433,8 @@ $(document).ready(function() {
 					"userName":userName,
 					"userEmail":userEmail,
 					"userPhoneNumber":userPhoneNumber,
-					"userAddress":userAddress
+					"userAddress1":userAddress1,
+					"userAddress2":userAddress2
 					}
 			,success: function(data) {
 				if (data.result == "success") {
